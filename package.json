@@ -1,0 +1,19 @@
+{
+   "name": "sandbox",
+   "description": "",
+   "homepage": "https://github.com/my8bird/nodejs-sandbox",
+   "version": "0.0.1",
+   "author": {
+      "name": "Nathan Landis", 
+      "email": "my8bird@gmail.com"},
+   "main": "main.js",
+   "repository" : { 
+      "type" : "git",
+      "url" : "https://github.com/my8bird/nodejs-sandbox.git"
+   },
+   "keywords": [],
+   "bugs" : { "url" : "https://github.com/my8bird/nodejs-sandbox/issues" },
+   "dependencies": 
+   {
+   }
+}
