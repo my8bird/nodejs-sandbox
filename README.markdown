@@ -6,6 +6,8 @@ npm link
 
 Usage
 -----
+
+
    var sandbox = require("nodejs-sandbox");
    sandbox.runSandboxed('console.log("fubar");');
 
