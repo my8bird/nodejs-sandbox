@@ -31,6 +31,12 @@
     // XXX connect to be notified when the child finishes.
 
     // XXX Setup a timeout so that long running code can be killed.
+    //
+    // Detect when the child has finished
+    proc.addListener('exit', function(statusCode) {
+       // XXX send signal that child finished with code
+       console.log("exit code", statusCode);
+    });
 
     //  The setup is finsihed so pipe in the source code to start things off.
     return proc.send({
