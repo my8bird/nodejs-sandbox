@@ -6,6 +6,11 @@ Install
 
 Usage
 -----
-    var sandbox = require("nodejs-sandbox");
+    var sandboxer = require("nodejs-sandbox");
+    var sandbox = new sandbox.Sandbox();
     sandbox.runSandboxed('console.log("fubar");');
+
+    // To detect phases
+    sandbox.on('start',  function() {console.log('start'); });
+    sandbox.on('finish', function() {console.log('finish'); });
 
