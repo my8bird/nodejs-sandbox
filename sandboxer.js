@@ -1,5 +1,22 @@
 (function() {
-  var cp = require('child_process');
+  var cp     = require('child_process'),
+      util   = require('util'),
+      events = require("events");
+
+  /* Sandbox
+   *
+   * A container that we will be able to run untrusted code in.
+   *
+   * Events:
+   * start:  Meta event for detecting when the untrusted code starts running
+   *         ()
+   * finish: Meta event for when the untrusted code finishes running.
+   *         (err, msg)
+   */
+  var Sandbox = function(){
+     events.EventEmitter.call(this);
+  }
+  util.inherits(Sandbox, events.EventEmitter);
 
   /*
    * runSandboxed(code, timeout)
@@ -18,30 +35,38 @@
    *
    * timeout: The amount of time to allow the source to run without requesting additional time.
    *          This is to prevent the downloaded source from getting into infinite loops and such.
+   *          XXX (not impl)
    */
-  exports.runSandboxed = function(code) {
+  Sandbox.prototype.runSandboxed = function(code) {
     var proc = cp.fork(__dirname + '/_sandbox_runner.js');
 
     // Connect to be notified of messages
     // Messages will be sanitised prior to usage.
     proc.on("message", function(m) {
        // Look at the message and determine if anything can be done to satisfy it.
+       if (m.err) {
+          if (m.err['0'] === '_') {
+             console.log("Error running untrusted script");
+             console.log(m);
+          }
+       }
     });
-
-    // XXX connect to be notified when the child finishes.
 
     // XXX Setup a timeout so that long running code can be killed.
-    //
+
     // Detect when the child has finished
-    proc.addListener('exit', function(statusCode) {
-       // XXX send signal that child finished with code
-       console.log("exit code", statusCode);
-    });
+    proc.addListener('exit', (function(statusCode) {
+       this.emit('finish', statusCode === 1);
+    }).bind(this));
 
     //  The setup is finsihed so pipe in the source code to start things off.
+    this.emit('start');
     return proc.send({
       "runCode": code
     });
   };
 
+
+  exports.Sandbox = Sandbox
 }).call(this);
+
