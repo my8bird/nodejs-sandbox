@@ -5,12 +5,13 @@ sandboxer = require(__dirname + '/../sandboxer.js');
 describe('Sandbox', function () {
    var box, end_status;
    
+   // { TEST Helpers
    function waitForSub() {
       waitsFor(function() {
          return end_status.err !== undefined; 
       }, 
       'sub script did not finish', // error message if timeout exceeds
-      200 // milliseconds to wait
+      200                          // milliseconds to wait
       );
    };
 
@@ -21,6 +22,13 @@ describe('Sandbox', function () {
       waitForSub();
    };
 
+   function assertRanWithError(withError) {
+      runs(function() {
+         expect(end_status).toEqual({start: true, err: withError});
+      });
+   };
+   // END TEST Helpers
+
    beforeEach(function() {
       box = new sandboxer.Sandbox();
       end_status = {};
@@ -28,23 +36,22 @@ describe('Sandbox', function () {
       box.on('finish', function(err) {
          end_status.err = err
       });
+
+      box.on('start', function() {
+         end_status.start = true;
+      });
    });
 
+   // TESTS
    it("valid code", function () {
       runCode('var a = 1;');
-
-      runs(function() {
-         expect(end_status).toEqual({err: false});
-      });
-
+      assertRanWithError(false);
    });
 
    it("fails with invalid code", function () {
       // notice there is no open paren
       runCode('console.log"22");');
-      runs(function() {
-         expect(end_status).toEqual({err: true});
-      });
+      assertRanWithError(true);
    });
 
 });

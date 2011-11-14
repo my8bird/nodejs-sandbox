@@ -46,8 +46,8 @@
        // Look at the message and determine if anything can be done to satisfy it.
        if (m.err) {
           if (m.err['0'] === '_') {
-             console.log("Error running untrusted script");
-             console.log(m);
+             proc.errors = proc.errors || [];
+             proc.errors.push(m);
           }
        }
     });

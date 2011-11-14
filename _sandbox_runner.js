@@ -16,9 +16,10 @@
     try {
        loaded_module = vm.createScript(codeStr);
     } catch (ex) {
-       process.send(
-          {'err': '_parsing',
-          msg: ex.toString()});
+       process.send({
+          err: '_parsing',
+          msg: ex.toString()
+       });
 
        process.exit(1);
     }
@@ -27,8 +28,13 @@
        loaded_module.runInNewContext({
           console: console
        });
-    } catch (err) {
-       console.log('---', err);
+    } catch (ex) {
+       process.send({
+          err: '_running',
+          msg: ex.toString()
+       });
+
+       process.exit(1);
     }
 
     process.exit(0);
