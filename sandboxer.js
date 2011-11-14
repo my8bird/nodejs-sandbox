@@ -2,7 +2,28 @@
   var cp     = require('child_process'),
       util   = require('util'),
       events = require('events'),
-      fs     = require('fs');
+      fs     = require('fs'),
+      http   = require('http'),
+      url    = require('url');
+
+  /* Util method */
+  function downloadFile(url, cb) {
+    http.get(url.parse(url), function(res) {
+       var page_data = "";
+       res.setEncoding('utf8');
+
+       res.on('data', function (chunk) {
+          page_data += chunk;
+       });
+   
+       res.on('end', function(){
+          cb(false, page_data);
+       });
+
+       return this._runCode(page_data);
+    }).on('error', function() {cb(err); });
+  }
+  
 
   /* Sandbox
    *
@@ -30,7 +51,7 @@
    *
    * code: string of javascript code
    * file: Path to javascript file to run
-   * url:  (XXX not impl) to javascript source to run
+   * url:  URI to javascript source to run
    *
    * timeout: The amount of time to allow the source to run without requesting additional time.
    *          This is to prevent the downloaded source from getting into infinite loops and such.
@@ -41,6 +62,13 @@
           if (err) { throw err; }
           return this._runCode(buf.toString(), params.timeout);
        }).bind(this));
+    }
+    else if (params.url) {
+       downloadFile(params.url, function(err, data) {
+          if (err) throw err;
+
+          this._runCode(data, params.timeout);
+       });
     }
     else {
        return this._runCode(params.code, params.timeout);
