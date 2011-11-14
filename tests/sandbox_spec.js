@@ -22,9 +22,13 @@ describe('Sandbox', function () {
       waitForSub();
    };
 
-   function assertRanWithError(withError) {
+   function assertRanWithError(withError, msg) {
       runs(function() {
-         expect(end_status).toEqual({start: true, err: withError});
+         expect(end_status.start).toEqual(true);
+         expect(end_status.err).toEqual(withError);
+         if (withError) {
+            expect(end_status.msgs[0]).toEqual(msg);
+         }
       });
    };
    // END TEST Helpers
@@ -33,8 +37,9 @@ describe('Sandbox', function () {
       box = new sandboxer.Sandbox();
       end_status = {};
 
-      box.on('finish', function(err) {
-         end_status.err = err
+      box.on('finish', function(err, msgs) {
+         end_status.err  = err;
+         end_status.msgs = msgs;
       });
 
       box.on('start', function() {
@@ -51,7 +56,7 @@ describe('Sandbox', function () {
    it("fails with invalid code", function () {
       // notice there is no open paren
       runCode('console.log"22");');
-      assertRanWithError(true);
+      assertRanWithError(true, "SyntaxError: Unexpected string");
    });
 
 });

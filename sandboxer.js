@@ -11,7 +11,7 @@
    * start:  Meta event for detecting when the untrusted code starts running
    *         ()
    * finish: Meta event for when the untrusted code finishes running.
-   *         (err, msg)
+   *         (err, [errors])
    */
   var Sandbox = function(){
      events.EventEmitter.call(this);
@@ -47,7 +47,7 @@
        if (m.err) {
           if (m.err['0'] === '_') {
              proc.errors = proc.errors || [];
-             proc.errors.push(m);
+             proc.errors.push(m.msg);
           }
        }
     });
@@ -56,7 +56,7 @@
 
     // Detect when the child has finished
     proc.addListener('exit', (function(statusCode) {
-       this.emit('finish', statusCode === 1);
+       this.emit('finish', statusCode === 1, proc.errors);
     }).bind(this));
 
     //  The setup is finsihed so pipe in the source code to start things off.
