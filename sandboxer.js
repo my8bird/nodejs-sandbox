@@ -29,7 +29,7 @@
    * XXX setup trusted handlers.
    *
    * code: string of javascript code
-   * file: file path (XXX not impl) to javascript
+   * file: Path to javascript file to run
    * url:  (XXX not impl) to javascript source to run
    *
    * timeout: The amount of time to allow the source to run without requesting additional time.
