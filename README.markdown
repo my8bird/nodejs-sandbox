@@ -14,3 +14,4 @@ Usage
     sandbox.on('start',  function() {console.log('start'); });
     sandbox.on('finish', function() {console.log('finish'); });
 
+@see _example.js for running code.
