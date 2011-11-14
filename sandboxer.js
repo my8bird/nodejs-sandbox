@@ -35,7 +35,6 @@
    *
    * timeout: The amount of time to allow the source to run without requesting additional time.
    *          This is to prevent the downloaded source from getting into infinite loops and such.
-   *          XXX (not impl)
    */
   Sandbox.prototype.runSandboxed = function(code, timeout) {
     var proc = cp.fork(__dirname + '/_sandbox_runner.js'),
