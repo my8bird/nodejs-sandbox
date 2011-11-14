@@ -8,7 +8,7 @@ Usage
 -----
     var sandboxer = require("nodejs-sandbox");
     var sandbox = new sandbox.Sandbox();
-    sandbox.runSandboxed('console.log("fubar");');
+    sandbox.runSandboxed({code: 'console.log("fubar");'});
 
     // To detect phases
     sandbox.on('start',  function() {console.log('start'); });
