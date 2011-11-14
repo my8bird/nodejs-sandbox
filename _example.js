@@ -12,5 +12,5 @@ sandbox.on('finish', function() {
 });
 
 // run some code in the sandboxer
-sandbox.runSandboxed('console.log("adsfasdf");');
+sandbox.runSandboxed({code: 'console.log("adsfasdf");'});
 

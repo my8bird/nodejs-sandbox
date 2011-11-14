@@ -1,4 +1,6 @@
-sandboxer = require(__dirname + '/../sandboxer.js');
+var sandboxer = require(__dirname + '/../sandboxer.js'),
+    fs        = require('fs'),
+    path      = require('path');
 
 
 describe('Sandbox', function () {
@@ -48,20 +50,27 @@ describe('Sandbox', function () {
 
    // TESTS
    it("works with valid code", function () {
-      runCode('var a = 1;');
+      runCode({code: 'var a = 1;'});
       assertRanWithError(false);
    });
 
    it("fails with invalid code", function () {
       // notice there is no open paren
-      runCode('console.log"22");');
+      runCode({code: 'console.log"22");'});
       assertRanWithError(true, "SyntaxError: Unexpected string");
    });
 
    it("fails if the timeout is passed", function() {
       // timeout set to happen after 0.1 seconds but the script will run for a full second.
-      runCode("setTimeout(function(){var a = 1;}, 1000);", 10);
+      runCode({code: "setTimeout(function(){var a = 1;}, 1000);", timeout: 10});
       assertRanWithError(true, "Timeout exceeded.");
+   });
+
+   it('can read from files', function() {
+      var tempfile = path.join(__dirname, "temp.js");
+      fs.writeFileSync(tempfile, 'var a = 1;');
+      runCode({file: tempfile});
+      assertRanWithError(false);
    });
 
 });

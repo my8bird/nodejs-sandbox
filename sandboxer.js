@@ -1,7 +1,8 @@
 (function() {
   var cp     = require('child_process'),
       util   = require('util'),
-      events = require("events");
+      events = require('events'),
+      fs     = require('fs');
 
   /* Sandbox
    *
@@ -28,15 +29,25 @@
    * XXX setup trusted handlers.
    *
    * code: string of javascript code
-   *       or
-   *       file path (XXX not impl) to javascript
-   *       or 
-   *       url (XXX not impl) to javascript source to run
+   * file: file path (XXX not impl) to javascript
+   * url:  (XXX not impl) to javascript source to run
    *
    * timeout: The amount of time to allow the source to run without requesting additional time.
    *          This is to prevent the downloaded source from getting into infinite loops and such.
    */
-  Sandbox.prototype.runSandboxed = function(code, timeout) {
+  Sandbox.prototype.runSandboxed = function(/* object */ params) {
+    if (params.file !== undefined) {
+       fs.readFile(params.file, (function(err, buf) {
+          if (err) { throw err; }
+          return this._runCode(buf.toString(), params.timeout);
+       }).bind(this));
+    }
+    else {
+       return this._runCode(params.code, params.timeout);
+    }
+  }
+
+  Sandbox.prototype._runCode = function(code, timeout) {
     var proc = cp.fork(__dirname + '/_sandbox_runner.js'),
         timer;
 
