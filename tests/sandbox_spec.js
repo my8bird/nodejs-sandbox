@@ -69,8 +69,13 @@ describe('Sandbox', function () {
    it('can read from files', function() {
       var tempfile = path.join(__dirname, "temp.js");
       fs.writeFileSync(tempfile, 'var a = 1;');
+
       runCode({file: tempfile});
       assertRanWithError(false);
+
+      runs(function() {
+         fs.unlinkSync(tempfile);
+      });
    });
 
 });
