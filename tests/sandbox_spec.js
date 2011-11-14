@@ -1,23 +1,22 @@
 sandboxer = require(__dirname + '/../sandboxer.js');
 
 
-
 describe('Sandbox', function () {
-   var box, end_status;
+   var box, end_status, proc;
    
-   // { TEST Helpers
+   // { Helpers
    function waitForSub() {
       waitsFor(function() {
          return end_status.err !== undefined; 
       }, 
       'sub script did not finish', // error message if timeout exceeds
-      200                          // milliseconds to wait
+      100                          // milliseconds to wait
       );
    };
 
-   function runCode(codeStr) {
+   function runCode(codeStr, timeout) {
       // run the code async
-      runs(function() { box.runSandboxed(codeStr); });
+      runs(function() { proc = box.runSandboxed(codeStr, timeout); });
       // wait for it to finish
       waitForSub();
    };
@@ -31,7 +30,7 @@ describe('Sandbox', function () {
          }
       });
    };
-   // END TEST Helpers
+   // END Helpers
 
    beforeEach(function() {
       box = new sandboxer.Sandbox();
@@ -48,7 +47,7 @@ describe('Sandbox', function () {
    });
 
    // TESTS
-   it("valid code", function () {
+   it("works with valid code", function () {
       runCode('var a = 1;');
       assertRanWithError(false);
    });
@@ -57,6 +56,12 @@ describe('Sandbox', function () {
       // notice there is no open paren
       runCode('console.log"22");');
       assertRanWithError(true, "SyntaxError: Unexpected string");
+   });
+
+   it("fails if the timeout is passed", function() {
+      // timeout set to happen after 0.1 seconds but the script will run for a full second.
+      runCode("setTimeout(function(){var a = 1;}, 1000);", 10);
+      assertRanWithError(true, "Timeout exceeded.");
    });
 
 });

@@ -37,8 +37,9 @@
    *          This is to prevent the downloaded source from getting into infinite loops and such.
    *          XXX (not impl)
    */
-  Sandbox.prototype.runSandboxed = function(code) {
-    var proc = cp.fork(__dirname + '/_sandbox_runner.js');
+  Sandbox.prototype.runSandboxed = function(code, timeout) {
+    var proc = cp.fork(__dirname + '/_sandbox_runner.js'),
+        timer;
 
     // Connect to be notified of messages
     // Messages will be sanitised prior to usage.
@@ -52,18 +53,27 @@
        }
     });
 
-    // XXX Setup a timeout so that long running code can be killed.
-
     // Detect when the child has finished
     proc.addListener('exit', (function(statusCode) {
-       this.emit('finish', statusCode === 1, proc.errors);
+       this.emit('finish', proc.timedOut || (statusCode > 0), proc.errors);
     }).bind(this));
 
     //  The setup is finsihed so pipe in the source code to start things off.
     this.emit('start');
-    return proc.send({
-      "runCode": code
-    });
+    proc.send( {runCode: code });
+
+    // set a timer to remind us to kill this proccess if it runs to long
+    if (timeout) {
+       timer = setTimeout(function() {
+          proc.timedOut = true;
+          proc.errors = proc.errors || [];
+          proc.errors.push('Timeout exceeded.');
+
+          proc.kill();
+       }, timeout);
+    }
+
+    return proc;
   };
 
 

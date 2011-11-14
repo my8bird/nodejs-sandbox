@@ -26,7 +26,8 @@
 
     try {
        loaded_module.runInNewContext({
-          console: console
+          console:    console,
+          setTimeout: setTimeout
        });
     } catch (ex) {
        process.send({
