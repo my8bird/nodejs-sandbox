@@ -15,6 +15,7 @@
    "bugs" : { "url" : "https://github.com/my8bird/nodejs-sandbox/issues" },
    "dependencies": 
    {
-      "jasmine-node": ">= 1.0.12"
+      "jasmine-node": ">= 1.0.12",
+      "docco": ">=0.3.0"
    }
 }
