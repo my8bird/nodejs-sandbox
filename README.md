@@ -1,6 +1,9 @@
+[![Build Status](https://secure.travis-ci.org/my8bird/nodejs-sandbox.png?branch=master)](http://travis-ci.org/my8bird/nodejs-sandbox)
+
+
 Install
 -------
-    git clone git@github.com:my8bird/nodejs-sandbox.git 
+    git clone git@github.com:my8bird/nodejs-sandbox.git
     cd nodejs-sandbox
     npm link
 
